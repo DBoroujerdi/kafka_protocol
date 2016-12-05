@@ -64,8 +64,12 @@
 
 -define(API_ProduceRequest,           0).
 -define(API_FetchRequest,             1).
--define(API_OffsetRequest,            2).
+-define(API_OffsetsRequest,           2).
 -define(API_MetadataRequest,          3).
+-define(API_LeaderAndIsrRequest,      4).
+-define(API_StopReplicaRequest,       5).
+-define(API_UpdateMetadataRequest,    6).
+-define(API_ControlledShutdownRequest,7).
 -define(API_OffsetCommitRequest,      8).
 -define(API_OffsetFetchRequest,       9).
 -define(API_GroupCoordinatorRequest, 10).
@@ -75,11 +79,15 @@
 -define(API_SyncGroupRequest,        14).
 -define(API_DescribeGroupsRequest,   15).
 -define(API_ListGroupsRequest,       16).
+-define(API_SaslHandshakeRequest,    17).
+-define(API_ApiVersionsRequest,      18).
+-define(API_CreateTopicsRequest,     19).
+-define(API_DeleteTopicsRequest,     20).
 
 -define(ALL_API_KEYS,
         [ ?API_ProduceRequest
         , ?API_FetchRequest
-        , ?API_OffsetRequest
+        , ?API_OffsetsRequest
         , ?API_MetadataRequest
         , ?API_OffsetCommitRequest
         , ?API_OffsetFetchRequest
@@ -94,9 +102,15 @@
 
 -define(REQ_TO_API_KEY(Req),
         case Req of
-          kpro_ProduceRequest          -> ?API_ProduceRequest;
-          kpro_FetchRequest            -> ?API_FetchRequest;
-          kpro_OffsetRequest           -> ?API_OffsetRequest;
+          kpro_ProduceRequestV0        -> ?API_ProduceRequest;
+          kpro_ProduceRequestV1        -> ?API_ProduceRequest;
+          kpro_ProduceRequestV2        -> ?API_ProduceRequest;
+          kpro_FetchRequestV0          -> ?API_FetchRequest;
+          kpro_FetchRequestV1          -> ?API_FetchRequest;
+          kpro_FetchRequestV2          -> ?API_FetchRequest;
+          kpro_FetchRequestV3          -> ?API_FetchRequest;
+          kpro_OffsetsRequestV0        -> ?API_OffsetsRequest;
+          kpro_OffsetsRequestV1        -> ?API_OffsetsRequest;
           kpro_MetadataRequest         -> ?API_MetadataRequest;
           kpro_OffsetCommitRequestV2   -> ?API_OffsetCommitRequest;
           kpro_OffsetCommitRequestV1   -> ?API_OffsetCommitRequest;
@@ -113,9 +127,18 @@
 
 -define(API_KEY_TO_REQ(ApiKey),
         case ApiKey of
-          ?API_ProduceRequest          -> kpro_ProduceRequest;
-          ?API_FetchRequest            -> kpro_FetchRequest;
-          ?API_OffsetRequest           -> kpro_OffsetRequest;
+          ?API_ProduceRequest          -> [ kpro_ProduceRequestV2
+                                          , kpro_ProduceRequestV1
+                                          , kpro_ProduceRequestV0
+                                          ];
+          ?API_FetchRequest            -> [ kpro_FetchRequestV0
+                                          , kpro_FetchRequestV1
+                                          , kpro_FetchRequestV2
+                                          , kpro_FetchRequestV3
+                                          ];
+          ?API_OffsetsRequest          -> [ kpro_OffsetsRequestV0
+                                          , kpro_OffsetsRequestV1
+                                          ];
           ?API_MetadataRequest         -> kpro_MetadataRequest;
           ?API_OffsetCommitRequest     -> [ kpro_OffsetCommitRequestV2
                                           , kpro_OffsetCommitRequestV1
@@ -135,7 +158,7 @@
         case ApiKey of
           ?API_ProduceRequest          -> kpro_ProduceResponse;
           ?API_FetchRequest            -> kpro_FetchResponse;
-          ?API_OffsetRequest           -> kpro_OffsetResponse;
+          ?API_OffsetsRequest          -> kpro_OffsetsResponse;
           ?API_MetadataRequest         -> kpro_MetadataResponse;
           ?API_OffsetCommitRequest     -> kpro_OffsetCommitResponse;
           ?API_OffsetFetchRequest      -> kpro_OffsetFetchResponse;
